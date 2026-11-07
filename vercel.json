@@ -1,0 +1,9 @@
+{
+  "rewrites": [
+    {
+      "source": "/",
+      "has": [{ "type": "host", "value": "link.larissafreitasugc.com.br" }],
+      "destination": "/links/index.html"
+    }
+  ]
+}
