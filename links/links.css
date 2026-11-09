@@ -162,9 +162,8 @@ ul { list-style: none; margin: 0; padding: 0; }
 
 /* destaque: orçamento (azul-marinho, como a seção Contato do site) */
 .lk-card--feature {
-  min-height: 210px;
   align-items: flex-end;
-  padding-right: 38%;
+  padding: 26px 22px;
   background: var(--navy);
   border-color: var(--navy);
   box-shadow: none;
@@ -173,6 +172,19 @@ ul { list-style: none; margin: 0; padding: 0; }
 .lk-card--feature .lk-card__title { color: #fff; font-size: clamp(26px, 7.6vw, 38px); white-space: nowrap; }
 .lk-card--feature .lk-card__title em { color: #f1c3c3; }
 .lk-card--feature:hover { border-color: var(--wine); }
+.lk-card__logo {
+  position: absolute;
+  right: clamp(18px, 6vw, 34px);
+  top: 50%;
+  width: clamp(84px, 26vw, 118px);
+  height: clamp(84px, 26vw, 118px);
+  margin-top: calc(clamp(84px, 26vw, 118px) / -2);
+  color: #f1c3c3;
+  --sun-core: var(--navy);
+  animation: spin 18s linear infinite;
+  pointer-events: none;
+}
+.lk-card--feature:hover .lk-card__logo { color: #fff; }
 .lk-card__cutout {
   position: absolute;
   right: 0;

@@ -105,17 +105,50 @@ const IG_MAX_POSTS = 4;
         const img = (p.sizes && p.sizes.medium && p.sizes.medium.mediaUrl) || p.thumbnailUrl || p.mediaUrl;
         const caption = (p.prunedCaption || p.caption || '').trim();
         const date = p.timestamp ? fmt.format(new Date(p.timestamp)).replace(/\./g, '').replace(/ de /g, ' ') : '';
-        const isVideo = p.mediaType === 'VIDEO';
+        const isVideo = p.mediaType === 'VIDEO' && p.mediaUrl;
+        const link = esc(p.permalink || IG_PROFILE);
+        const alt = esc(caption.slice(0, 100)) || 'Post do Instagram';
+        if (isVideo) {
+          // vídeo: toca no próprio site ao clicar no play
+          return `
+            <div class="post post--igvideo">
+              <span class="post__media">
+                <img src="${esc(img)}" alt="${alt}" loading="lazy">
+                <button class="post__play" type="button" data-src="${esc(p.mediaUrl)}" data-poster="${esc(img)}" aria-label="Assistir vídeo">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l11-6.5z"/></svg>
+                </button>
+              </span>
+              <a class="post__date" href="${link}" target="_blank" rel="noopener">${esc(date)} · Ver no Instagram →</a>
+              <span class="post__caption">${esc(caption)}</span>
+            </div>`;
+        }
         return `
-          <a class="post" href="${esc(p.permalink || IG_PROFILE)}" target="_blank" rel="noopener">
+          <a class="post" href="${link}" target="_blank" rel="noopener">
             <span class="post__media">
-              <img src="${esc(img)}" alt="${esc(caption.slice(0, 100)) || 'Post do Instagram'}" loading="lazy">
-              ${isVideo ? '<span class="post__badge" aria-label="Vídeo">▶</span>' : ''}
+              <img src="${esc(img)}" alt="${alt}" loading="lazy">
             </span>
             <span class="post__date">${esc(date)}</span>
             <span class="post__caption">${esc(caption)}</span>
           </a>`;
       }).join('');
+
+      // play: troca a capa pelo vídeo e pausa os outros
+      grid.addEventListener('click', e => {
+        const btn = e.target.closest('.post__play');
+        if (!btn) return;
+        const media = btn.parentElement;
+        grid.querySelectorAll('video').forEach(v => v.pause());
+        const video = document.createElement('video');
+        video.src = btn.dataset.src;
+        video.poster = btn.dataset.poster;
+        video.controls = true;
+        video.playsInline = true;
+        video.autoplay = true;
+        video.addEventListener('play', () => grid.querySelectorAll('video').forEach(v => { if (v !== video) v.pause(); }));
+        media.classList.add('is-playing');
+        media.replaceChildren(video);
+        video.play().catch(() => {});
+      });
       if (window.revealIn) window.revealIn(grid);
     })
     .catch(fallback);
